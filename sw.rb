@@ -32,6 +32,12 @@ class Stopwatch
     @filepath = filepath
   end
 
+  def reset
+    stop if @runnning
+    stats
+    silent_reset
+  end
+
   def start
     load
     if @running
@@ -55,14 +61,14 @@ class Stopwatch
     save
   end
 
-  def reset
+  def silent_reset
     load
     @times = []
     @running = false
     save
   end
 
-  def print_stats
+  def stats
 
     def nice_time(time)
       time.localtime.to_s[11..18]
@@ -160,6 +166,10 @@ class Stopwatch
 
 end
 
+def default_filepath
+  File.join(Dir.home, ".sw.yml")
+end
+
 def print_usage
   print <<EOF
 Usage:
@@ -171,32 +181,21 @@ Usage:
 EOF
 end
 
-def default_filepath
-  File.join(Dir.home, ".sw.yml")
+def process_subcommand(subcommand)
+  if [:start, :stop, :reset, :stats].include? subcommand
+    stopwatch = Stopwatch.new(default_filepath)
+    stopwatch.send(subcommand)
+  elsif subcommand == :help
+    print_usage
+  else
+    print "Unrecognized subcommand: #{subcommand}\n\n"
+    print_usage
+  end
 end
 
 def main
   if ARGV.size == 1
-    stopwatch = Stopwatch.new(default_filepath)
-    case ARGV[0]
-      when "start"
-        stopwatch.start
-      when "stop"
-        stopwatch.stop
-      when "reset"
-        stopwatch.stop if stopwatch.running
-        stopwatch.print_stats
-        stopwatch.reset
-      when "stats"
-        stopwatch.print_stats 
-      when "version"
-        print_version
-      when "help"
-        print_usage
-      else
-        print "Unrecognized subcommand.\n\n"
-        print_usage
-    end
+    process_subcommand(ARGV[0].to_sym)
   else
     print "Incorrect number of arguments.\n\n"
     print_usage
