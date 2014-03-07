@@ -28,7 +28,8 @@ class Stopwatch
   
   attr_reader :running
 
-  def initialize
+  def initialize(filepath)
+    @filepath = filepath
   end
 
   def start
@@ -137,10 +138,6 @@ class Stopwatch
       3
     end
 
-    def serialization_filepath
-      File.join(Dir.home, ".sw.yml")
-    end
-
     def copy_other(other_stopwatch)
       @times = other_stopwatch.times
       @running = other_stopwatch.running
@@ -149,14 +146,14 @@ class Stopwatch
     def save
       @times ||= Array.new
       @running ||= false
-      File.open(serialization_filepath,'w') do |file|
+      File.open(@filepath,'w') do |file|
         file.puts(self.to_yaml)
       end
     end
 
     def load
-      if File.exists?(serialization_filepath)
-        other = YAML.load(File.read(serialization_filepath))
+      if File.exists?(@filepath)
+        other = YAML.load(File.read(@filepath))
         copy_other(other)
       end 
     end
@@ -174,9 +171,13 @@ Usage:
 EOF
 end
 
+def default_filepath
+  File.join(Dir.home, ".sw.yml")
+end
+
 def main
   if ARGV.size == 1
-    stopwatch = Stopwatch.new
+    stopwatch = Stopwatch.new(default_filepath)
     case ARGV[0]
       when "start"
         stopwatch.start
