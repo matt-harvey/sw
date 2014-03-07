@@ -24,10 +24,7 @@ THE SOFTWARE.
 Overview
 ========
 
-``sw`` is a command line stopwatch utility with a few bells and whistles.
-
-The following instructions are written from the point of view of a Unix-like
-system.
+``sw`` is a command line stopwatch utility.
 
 Dependencies
 ============
@@ -43,6 +40,9 @@ On Unix-like systems, you can install ``sw`` as follows:
 - ``sudo cp sw.rb /usr/local/bin/sw`` (or copy to a different location as you
   see fit).
 
+Note ``sw`` will also create a file called ``.sw`` in your home folder, the
+first time it is run. If such a file already exists, *it will be clobbered*.
+
 Uninstalling
 ============
 
@@ -52,22 +52,12 @@ the program creates in your home directory.
 On Unix-like systems, this can be done as follows:
 
 - ``sudo rm /usr/local/bin/sw`` (or from wherever you installed it)
-- ``rm .sw``
+- ``rm ~/.sw``
 
 Usage
 =====
 
-Start the stopwatch: ``sw start``
-Stop the stopwatch: ``sw stop``
-Clear the stopwatch back to zero, and output stats: ``sw reset``
-Output stats without clearing: ``sw stats``
-
-Stats include:
-
-- Time at which stopwatch was first started, since last cleared.
-- Time at which stopwatch was last toggled (whether stopped or started).
-- Total time elapsed.
-- Total interruptions.
+Enter ``sw help`` to see a summary of usage.
 
 Contact
 =======
@@ -75,12 +65,4 @@ Contact
 You are welcome to contact me about this project at:
 
 sw@matthewharvey.net
-
-
-
-
-
-
-
-
 
