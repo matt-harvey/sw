@@ -78,13 +78,14 @@ Known shortcomings
 ==================
 
 - The program does not make a swap or backup of the ``.sw.yml`` data file. It
-  should.
-- There should be an install script that makes sure that there isn't already
-  a file called ``.sw.yml`` in the user's home directory.
+  probably should.
+- There should probably be an install script that makes sure that there isn't
+  already a file called ``.sw.yml`` in the user's home directory.
+- It hasn't been formally tested.
 - There is no way of manually entering start and finishing times. (Although you
   could always just open up ``.sw.yml`` and change the times therein - being
-  careful to preserve the prescribed format for times. The first time in the
-  list is the time the stopwatch was initially started, after the previous
+  careful to preserve the prescribed format for times. Note the first time in
+  the list is the time the stopwatch was initially started, after the previous
   reset. The second time shows the first time it was stopped. Thereafter, times
   alternate between starting and stopping times.)
 
@@ -93,5 +94,5 @@ Contact
 
 You are welcome to contact me about this project at:
 
-sw@matthewharvey.net
+software@matthewharvey.net
 
