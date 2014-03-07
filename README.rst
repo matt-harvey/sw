@@ -21,10 +21,29 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Overview
-========
+Usage
+=====
 
-``sw`` is a command line stopwatch utility.
+``sw`` is a simple command line based stopwatch utility.
+
+It is designed to be particularly useful for employees and contractors who need
+to enter starting and finishing times into a timesheet (in terms of hours and
+minutes) but also need a calculation (in terms of decimal fractions) of the
+total number of hours they have worked.
+
+Typical usage for building a timesheet:
+
+- At the start of the working day, enter ``sw reset`` (to ensure the stopwatch
+  is reset to zero), followed to ``sw start``.
+- When you go on a lunch break or other break, enter ``sw stop``.
+- When you come back from a break, enter ``sw start`` again.
+- When you finish your day, enter ``sw reset``.
+
+On being reset - or on entering ``sw stats`` - the program will output a
+summary of starting and stopping times, the total hours elapsed ignoring breaks,
+the total duration of breaks, and the total hours elapsed net of breaks.
+
+For a summary of usage, enter ``sw help``.
 
 Dependencies
 ============
@@ -34,30 +53,40 @@ You need ``ruby``.
 Installing
 ==========
 
-On Unix-like systems, you can install ``sw`` as follows:
+On Unix-like systems, you can install ``sw`` from the command line as follows:
 
 - ``chmod +x sw.rb``
 - ``sudo cp sw.rb /usr/local/bin/sw`` (or copy to a different location as you
   see fit).
 
-Note ``sw`` will also create a file called ``.sw`` in your home folder, the
-first time it is run. If such a file already exists, *it will be clobbered*.
+**NOTE** ``sw`` will also create a file called ``.sw.yml`` in your home folder,
+the first time it is run. If a file with this name already exists, *it will be
+clobbered*.
 
 Uninstalling
 ============
 
-You need to remove both the ``sw`` script, and the ``.sw`` data file that
+You need to remove both the ``sw`` script, and the ``.sw.yml`` data file that
 the program creates in your home directory.
 
 On Unix-like systems, this can be done as follows:
 
 - ``sudo rm /usr/local/bin/sw`` (or from wherever you installed it)
-- ``rm ~/.sw``
+- ``rm ~/.sw.yml``
 
-Usage
-=====
+Known shortcomings
+==================
 
-Enter ``sw help`` to see a summary of usage.
+- The program does not make a swap or backup of the ``.sw.yml`` data file. It
+  should.
+- There should be an install script that makes sure that there isn't already
+  a file called ``.sw.yml`` in the user's home directory.
+- There is no way of manually entering start and finishing times. (Although you
+  could always just open up ``.sw.yml`` and change the times therein - being
+  careful to preserve the prescribed format for times. The first time in the
+  list is the time the stopwatch was initially started, after the previous
+  reset. The second time shows the first time it was stopped. Thereafter, times
+  alternate between starting and stopping times.)
 
 Contact
 =======

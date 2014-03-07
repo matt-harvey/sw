@@ -36,6 +36,7 @@ class Stopwatch
     if @running
       puts "Stopwatch is already running."
     else
+      @times ||= []
       @times << Time.new
       @running = true
     end
@@ -137,7 +138,7 @@ class Stopwatch
     end
 
     def serialization_filepath
-      File.join(Dir.home, ".sw")
+      File.join(Dir.home, ".sw.yml")
     end
 
     def copy_other(other_stopwatch)
