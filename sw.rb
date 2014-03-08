@@ -34,9 +34,10 @@ class Stopwatch
   end
 
   def reset
-    stop if @runnning
+    stop if @running
     stats
     silent_reset
+    puts "\nStopwatch has been reset."
   end
 
   def start
@@ -123,12 +124,7 @@ class Stopwatch
     puts "Gross hours elapsed:       #{nice_hours(hours_ignoring_breaks)}"
     puts "Breaks:                    #{nice_hours(total_breaks)}"
     puts "Net hours elapsed:         #{nice_hours(cumulative_hours)}"
-    puts ""
-    if @running
-      puts "*Stopwatch is running."
-    else
-      puts "Stopwatch is stopped."
-    end
+    puts "\n*Stopwatch is still running." if @running
   end
 
   protected
