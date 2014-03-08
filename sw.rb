@@ -24,6 +24,38 @@
 
 require 'yaml'
 
+ 
+module TimeConversion
+  
+  def self.seconds_to_hours(hours)
+    hours / 60.0 / 60.0
+  end
+
+  def self.local_time_string(date_time_string)
+    # TODO Make this less of a hack.
+    date_time_string.localtime.to_s[11..18]
+  end
+end
+
+module Formatting
+
+  def self.nice_hours(hours, decimal_places)
+    s = hours.round(decimal_places).to_s
+    parts = s.split('.')
+    frac = parts[1]
+    frac = Formatting.pad_right(frac, 3, "0")
+    parts[0] + "." + frac
+  end
+
+  def self.pad_right(original, target_width, character)
+    ret = original.to_s
+    while ret.length < target_width
+      ret << character
+    end
+    ret
+  end
+end
+
 class Stopwatch
   
   attr_reader :running
@@ -69,27 +101,8 @@ class Stopwatch
 
   def stats
 
-    def nice_time(time)
-      time.localtime.to_s[11..18]
-    end
-
     def nice_hours(hours)
-
-      def pad(float)
-        s = float.to_s
-        parts = s.split('.')
-        frac = parts[1]
-        while frac.size < 3
-          frac += "0"
-        end
-        parts[0] + "." + frac
-      end
-
-      pad(hours.round(rounding))
-    end
-
-    def seconds_to_hours(hours)
-      hours / 60.0 / 60.0
+      Formatting.nice_hours(hours, rounding)
     end
 
     return unless @times
@@ -100,28 +113,23 @@ class Stopwatch
     original_start_time = @times[0]
     while i < @times.size
       start_time = times[i]
-      if i + 1 < @times.size
-        stop_time = times[i+1]
-      else
-        stop_time = Time.new
-      end
+      stop_time = ((i + 1 < @times.size)? times[i + 1]: Time.new)
       final_end_time = stop_time
-      hours = seconds_to_hours(stop_time - start_time)
+      hours = TimeConversion.seconds_to_hours(stop_time - start_time)
       cumulative_hours = cumulative_hours + hours
-      print "#{nice_time(start_time)}  #{nice_time(stop_time)}"
-      if @running && (i + 1 == @times.size)
-        print "* "
-      else
-        print "  "
-      end
-      puts  "#{nice_hours(hours)}  #{nice_hours(cumulative_hours)}"
+      start_time_s = TimeConversion.local_time_string(start_time)
+      stop_time_s = TimeConversion.local_time_string(stop_time)
+      print "#{start_time_s}  #{stop_time_s}"
+      print ((@running && (i + 1 == @times.size))? "*": " ")
+      print " "
+      puts "#{nice_hours(hours)}  #{nice_hours(cumulative_hours)}"
       i += 2
     end
-    hours_ignoring_breaks =
-      seconds_to_hours(final_end_time - original_start_time)
-    total_breaks = hours_ignoring_breaks - cumulative_hours
+    hours_inc_breaks =
+      TimeConversion.seconds_to_hours(final_end_time - original_start_time)
+    total_breaks = hours_inc_breaks - cumulative_hours
     puts ""
-    puts "Gross hours elapsed:       #{nice_hours(hours_ignoring_breaks)}"
+    puts "Gross hours elapsed:       #{nice_hours(hours_inc_breaks)}"
     puts "Breaks:                    #{nice_hours(total_breaks)}"
     puts "Net hours elapsed:         #{nice_hours(cumulative_hours)}"
     puts "\n*Stopwatch is still running." if @running
@@ -159,12 +167,14 @@ class Stopwatch
 
 end
 
-def default_filepath
-  File.join(Dir.home, ".sw.yml")
-end
+module CommandProcessor
 
-def print_usage
-  print <<EOF
+  def self.default_filepath
+    File.join(Dir.home, ".sw.yml")
+  end
+
+  def self.print_usage
+    print <<EOF
 Usage:
   sw start    Start the stopwatch
   sw stop     Stop the stopwatch
@@ -172,27 +182,28 @@ Usage:
   sw stats    Output stats without resetting the stopwatch
   sw help     Print this help message
 EOF
-end
+  end
 
-def process_subcommand(subcommand)
-  if [:start, :stop, :reset, :stats].include? subcommand
-    stopwatch = Stopwatch.new(default_filepath)
-    stopwatch.send(subcommand)
-  elsif subcommand == :help
-    print_usage
-  else
-    print "Unrecognized subcommand: #{subcommand}\n\n"
-    print_usage
+  def self.process_subcommand(subcommand)
+    if [:start, :stop, :reset, :stats].include? subcommand
+      stopwatch = Stopwatch.new(default_filepath)
+      stopwatch.send(subcommand)
+    elsif subcommand == :help
+      print_usage
+    else
+      print "Unrecognized subcommand: #{subcommand}\n\n"
+      print_usage
+    end
+  end
+
+  def self.main
+    if ARGV.size == 1
+      process_subcommand(ARGV[0].to_sym)
+    else
+      print "Incorrect number of arguments.\n\n"
+      print_usage
+    end
   end
 end
 
-def main
-  if ARGV.size == 1
-    process_subcommand(ARGV[0].to_sym)
-  else
-    print "Incorrect number of arguments.\n\n"
-    print_usage
-  end
-end
-
-main
+CommandProcessor.main
