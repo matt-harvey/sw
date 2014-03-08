@@ -24,7 +24,6 @@
 
 require 'yaml'
 
- 
 module TimeConversion
   
   def self.seconds_to_hours(hours)
@@ -58,7 +57,9 @@ end
 
 class Stopwatch
   
-  attr_reader :running
+  def running
+    @times && @times.size.odd?
+  end
 
   def initialize(filepath)
     @filepath = filepath
@@ -66,27 +67,25 @@ class Stopwatch
   end
 
   def reset
-    stop if @running
+    stop if running
     stats
     silent_reset
     puts "\nStopwatch has been reset."
   end
 
   def start
-    if @running
+    if running
       puts "Stopwatch is already running."
     else
       @times ||= []
       @times << Time.new
-      @running = true
     end
     save
   end
 
   def stop
-    if @running
+    if running
       @times << Time.new
-      @running = false
     else
       puts "Stopwatch is not running."
     end
@@ -95,11 +94,12 @@ class Stopwatch
 
   def silent_reset
     @times = []
-    @running = false
     save
   end
 
   def stats
+
+    # TODO Make this less of a mess.
 
     def nice_hours(hours)
       Formatting.nice_hours(hours, rounding)
@@ -120,7 +120,7 @@ class Stopwatch
       start_time_s = TimeConversion.local_time_string(start_time)
       stop_time_s = TimeConversion.local_time_string(stop_time)
       print "#{start_time_s}  #{stop_time_s}"
-      print ((@running && (i + 1 == @times.size))? "*": " ")
+      print ((running && (i + 1 == @times.size))? "*": " ")
       print " "
       puts "#{nice_hours(hours)}  #{nice_hours(cumulative_hours)}"
       i += 2
@@ -132,7 +132,7 @@ class Stopwatch
     puts "Gross hours elapsed:       #{nice_hours(hours_inc_breaks)}"
     puts "Breaks:                    #{nice_hours(total_breaks)}"
     puts "Net hours elapsed:         #{nice_hours(cumulative_hours)}"
-    puts "\n*Stopwatch is still running." if @running
+    puts "\n*Stopwatch is still running." if running
   end
 
   protected
@@ -147,12 +147,10 @@ class Stopwatch
 
     def copy_other(other_stopwatch)
       @times = other_stopwatch.times
-      @running = other_stopwatch.running
     end
 
     def save
       @times ||= Array.new
-      @running ||= false
       File.open(@filepath,'w') do |file|
         file.puts(self.to_yaml)
       end
@@ -167,11 +165,14 @@ class Stopwatch
 
 end
 
-module CommandProcessor
-
+module Persistence
+  
   def self.default_filepath
     File.join(Dir.home, ".sw.yml")
   end
+end
+
+module CommandProcessor
 
   def self.print_usage
     print <<EOF
@@ -186,7 +187,7 @@ EOF
 
   def self.process_subcommand(subcommand)
     if [:start, :stop, :reset, :stats].include? subcommand
-      stopwatch = Stopwatch.new(default_filepath)
+      stopwatch = Stopwatch.new(Persistence.default_filepath)
       stopwatch.send(subcommand)
     elsif subcommand == :help
       print_usage
