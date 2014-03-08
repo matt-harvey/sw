@@ -99,7 +99,12 @@ class Stopwatch
 
   def stats
 
-    # TODO Make this less of a mess.
+    # TODO Make this less of a mess. Could control it via a Table and
+    # Column class. Would make it more maintainable and configurable and could
+    # probably be reused in other command line projects.
+
+    # TODO Should output time elapsed both in hours+minutes, and
+    # in decimal hours.
 
     def nice_hours(hours)
       Formatting.nice_hours(hours, rounding)
