@@ -30,6 +30,7 @@ class Stopwatch
 
   def initialize(filepath)
     @filepath = filepath
+    load 
   end
 
   def reset
@@ -39,7 +40,6 @@ class Stopwatch
   end
 
   def start
-    load
     if @running
       puts "Stopwatch is already running."
     else
@@ -51,7 +51,6 @@ class Stopwatch
   end
 
   def stop
-    load
     if @running
       @times << Time.new
       @running = false
@@ -62,7 +61,6 @@ class Stopwatch
   end
 
   def silent_reset
-    load
     @times = []
     @running = false
     save
@@ -93,7 +91,6 @@ class Stopwatch
       hours / 60.0 / 60.0
     end
 
-    load
     return unless @times
     return if @times.empty?
     puts    "BEGIN     END       HOURS  CUMULATIVE"
