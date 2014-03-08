@@ -175,14 +175,14 @@ end
 module CommandProcessor
 
   def self.print_usage
-    print <<EOF
-Usage:
-  sw start    Start the stopwatch
-  sw stop     Stop the stopwatch
-  sw reset    Output stats, and reset the stopwatch to zero
-  sw stats    Output stats without resetting the stopwatch
-  sw help     Print this help message
-EOF
+    print <<-EOF.gsub(/ {6}/, '')
+      Usage:
+        sw start    Start the stopwatch
+        sw stop     Stop the stopwatch
+        sw reset    Output stats, and reset the stopwatch to zero
+        sw stats    Output stats without resetting the stopwatch
+        sw help     Print this help message
+      EOF
   end
 
   def self.process_subcommand(subcommand)
