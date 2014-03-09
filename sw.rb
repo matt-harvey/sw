@@ -57,13 +57,14 @@ end
 
 class Stopwatch
   
-  def running
-    @times && @times.size.odd?
-  end
-
   def initialize(filepath)
     @filepath = filepath
+    @times = []
     load 
+  end
+
+  def running
+    @times.size.odd?
   end
 
   def reset
@@ -77,7 +78,6 @@ class Stopwatch
     if running
       puts "Stopwatch is already running."
     else
-      @times ||= []
       @times << Time.new
     end
     save
@@ -110,18 +110,16 @@ class Stopwatch
       Formatting.nice_hours(hours, rounding)
     end
 
-    return unless @times
     return if @times.empty?
     puts    "BEGIN     END       HOURS  CUMULATIVE"
     i = 0
     cumulative_hours = 0.0
     original_start_time = @times[0]
     while i < @times.size
-      start_time = times[i]
-      stop_time = ((i + 1 < @times.size)? times[i + 1]: Time.new)
-      final_end_time = stop_time
+      start_time = @times[i]
+      stop_time = ((i + 1 < @times.size)? @times[i + 1]: Time.new)
       hours = TimeConversion.seconds_to_hours(stop_time - start_time)
-      cumulative_hours = cumulative_hours + hours
+      cumulative_hours += hours
       start_time_s = TimeConversion.local_time_string(start_time)
       stop_time_s = TimeConversion.local_time_string(stop_time)
       print "#{start_time_s}  #{stop_time_s}"
@@ -131,7 +129,7 @@ class Stopwatch
       i += 2
     end
     hours_inc_breaks =
-      TimeConversion.seconds_to_hours(final_end_time - original_start_time)
+      TimeConversion.seconds_to_hours(stop_time - original_start_time)
     total_breaks = hours_inc_breaks - cumulative_hours
     puts ""
     puts "Gross hours elapsed:       #{nice_hours(hours_inc_breaks)}"
@@ -140,32 +138,18 @@ class Stopwatch
     puts "\n*Stopwatch is still running." if running
   end
 
-  protected
-
-    attr_reader :times
-
   private
     
     def rounding
       3
     end
 
-    def copy_other(other_stopwatch)
-      @times = other_stopwatch.times
-    end
-
     def save
-      @times ||= Array.new
-      File.open(@filepath,'w') do |file|
-        file.puts(self.to_yaml)
-      end
+      File.open(@filepath,'w') { |file| file.puts(@times.to_yaml) }
     end
 
     def load
-      if File.exists?(@filepath)
-        other = YAML.load(File.read(@filepath))
-        copy_other(other)
-      end 
+      @times = YAML.load(File.read(@filepath)) if File.exists?(@filepath)
     end
 
 end
