@@ -26,15 +26,15 @@ Usage
 
 ``sw`` is a simple command line based stopwatch utility.
 
-It is designed to be particularly useful for employees and contractors who need
-to enter starting and finishing times into a timesheet (in terms of hours and
-minutes) but also need a calculation (in terms of decimal fractions) of the
-total number of hours they have worked.
+It is designed to be particularly useful for people who need to enter starting
+and finishing times into a timesheet - in terms of hours and minutes - but also
+need a calculation - in terms of decimal fractions - of the total number of
+hours they have worked.
 
 Typical usage for building a timesheet:
 
 - At the start of the working day, enter ``sw reset`` (to ensure the stopwatch
-  is reset to zero), followed to ``sw start``.
+  is reset to zero), followed by ``sw start``.
 - When you go on a lunch break or other break, enter ``sw stop``.
 - When you come back from a break, enter ``sw start`` again.
 - When you finish your day, enter ``sw reset``.
@@ -66,22 +66,16 @@ clobbered*.
 Uninstalling
 ============
 
-You need to remove both the ``sw`` script, and the ``.sw.yml`` data file that
-the program creates in your home directory.
-
-On Unix-like systems, this can be done as follows:
-
-- ``sudo rm /usr/local/bin/sw`` (or from wherever you installed it)
-- ``rm ~/.sw.yml``
+You need to remove both the ``sw`` script (from ``/usr/local/bin``, or wherever
+you installed it), and the ``.sw.yml`` data file that the program creates in
+your home directory.
 
 Known shortcomings
 ==================
 
 - The program does not make a swap or backup of the ``.sw.yml`` data file. It
   probably should.
-- There should probably be an install script that makes sure that there isn't
-  already a file called ``.sw.yml`` in the user's home directory.
-- It hasn't been formally tested.
+- It hasn't been properly tested.
 - There is no way of manually entering start and finishing times. (Although you
   could always just open up ``.sw.yml`` and change the times therein - being
   careful to preserve the prescribed format for times. Note the first time in
@@ -95,4 +89,3 @@ Contact
 You are welcome to contact me about this project at:
 
 software@matthewharvey.net
-
